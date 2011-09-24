@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+
+# 2011-06-10 CKKL
+# Given an input of lines in HH:MM:SS format, computes the total time in decimal hours.
+# E.g. one line 03:30:00 will give as a result 3.5 hrs.
+# Each line could also be in format HH:MM, in which case we compute zero for seconds.
+
+
+import fileinput
+
+hours = 0
+minutes = 0
+seconds = 0
+countValid = 0
+countInvalid = 0
+
+for line in fileinput.input():
+	line = line.strip()
+	hms = line.split(':')
+	ok = False
+	if len(hms) == 2:
+		ph = hms[0]
+		pm = hms[1]
+		if ph.isdigit() and pm.isdigit():
+			ok = True
+			countValid += 1
+			h = int(ph)
+			m = int(pm)
+			hours   = hours + h
+			minutes = minutes + m
+			print '[X] %s' % (line)
+	elif len(hms) == 3:
+		ph = hms[0]
+		pm = hms[1]
+		ps = hms[2]
+		if ph.isdigit() and pm.isdigit() and ps.isdigit():
+			ok = True
+			countValid += 1
+			h = int(ph)
+			m = int(pm)
+			s = int(ps)
+			hours   = hours + h
+			minutes = minutes + m
+			seconds = seconds + s
+			print '[X] %s' % (line)
+	if not ok:
+		countInvalid += 1
+		print '[ ] %s' % (line)
+		
+print '================='
+print 'Total items: %s, Valid: %s, Invalid: %s' % (countValid + countInvalid, countValid, countInvalid)
+print '%sH:%sM:%sS' % (hours, minutes, seconds)
+
+_total = seconds + minutes * 60 + hours * 3600
+total = _total
+h = total / 3600
+total = total - h * 3600
+m = total / 60
+total = total - m * 60
+s = total
+print '%sH:%sM:%sS' % (h, m, s)
+
+print '%s hrs' % (1.0 * _total / 3600)

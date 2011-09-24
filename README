@@ -1,0 +1,6 @@
+Count hours (useful in conjunction with timesheet logging).
+
+While tracking activities, I log the time spent on them in HH:MM format. I then then use this script to get a total time.
+
+Recipe: Use a spreadsheet or a CSV file with a column in HH:MM format. Then copy the columns for which you need a total time and in the shell (I am on a Mac) issue: pbpaste|count-hrs. There you go, you know the total time spent.
+
