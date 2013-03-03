@@ -1,12 +1,18 @@
 #!/usr/bin/env python
 
 # 2011-06-10 CKKL
-# Given an input of lines in HH:MM:SS format, computes the total time in decimal hours.
+# Given an input of lines in 'HH:MM:SS' or 'HH MM SS' format, computes the total time in decimal hours.
 # E.g. one line 03:30:00 will give as a result 3.5 hrs.
-# Each line could also be in format HH:MM, in which case we compute zero for seconds.
+# Each line could also be in formats 'HH:MM' or 'HH MM', in which case we compute zero for seconds.
 
 
 import fileinput
+import re
+from os import environ
+
+HRS_RATE='HRS_RATE'
+ColonPat = re.compile("\\s*:\\s*")
+SpacePat = re.compile("\\s+")
 
 hours = 0
 minutes = 0
@@ -14,50 +20,61 @@ seconds = 0
 countValid = 0
 countInvalid = 0
 
+if HRS_RATE in environ:
+    Rate = float(environ[HRS_RATE])
+else:
+    Rate = None
+
 for line in fileinput.input():
-	line = line.strip()
-	hms = line.split(':')
-	ok = False
-	if len(hms) == 2:
-		ph = hms[0]
-		pm = hms[1]
-		if ph.isdigit() and pm.isdigit():
-			ok = True
-			countValid += 1
-			h = int(ph)
-			m = int(pm)
-			hours   = hours + h
-			minutes = minutes + m
-			print '[X] %s' % (line)
-	elif len(hms) == 3:
-		ph = hms[0]
-		pm = hms[1]
-		ps = hms[2]
-		if ph.isdigit() and pm.isdigit() and ps.isdigit():
-			ok = True
-			countValid += 1
-			h = int(ph)
-			m = int(pm)
-			s = int(ps)
-			hours   = hours + h
-			minutes = minutes + m
-			seconds = seconds + s
-			print '[X] %s' % (line)
-	if not ok:
-		countInvalid += 1
-		print '[ ] %s' % (line)
-		
+    line = line.strip()
+    if line.find(':') > 0:
+        hms = ColonPat.split(line)
+    else:
+        hms = SpacePat.split(line)
+    ok = False
+    if len(hms) == 2:
+        ph = hms[0]
+        pm = hms[1]
+        if ph.isdigit() and pm.isdigit():
+            ok = True
+            countValid += 1
+            h = int(ph)
+            m = int(pm)
+            hours = hours + h
+            minutes = minutes + m
+            print '[X] %s' % (line)
+    elif len(hms) == 3:
+        ph = hms[0]
+        pm = hms[1]
+        ps = hms[2]
+        if ph.isdigit() and pm.isdigit() and ps.isdigit():
+            ok = True
+            countValid += 1
+            h = int(ph)
+            m = int(pm)
+            s = int(ps)
+            hours = hours + h
+            minutes = minutes + m
+            seconds = seconds + s
+            print '[X] %s' % (line)
+    if not ok:
+        countInvalid += 1
+        print '[ ] %s' % (line)
+
 print '================='
 print 'Total items: %s, Valid: %s, Invalid: %s' % (countValid + countInvalid, countValid, countInvalid)
 print '%sH:%sM:%sS' % (hours, minutes, seconds)
 
-_total = seconds + minutes * 60 + hours * 3600
-total = _total
-h = total / 3600
-total = total - h * 3600
-m = total / 60
-total = total - m * 60
-s = total
-print '%sH:%sM:%sS' % (h, m, s)
+TotalSeconds = seconds + minutes * 60 + hours * 3600
+TotalHours = 1.0 * TotalSeconds / 3600.0
+_total = TotalSeconds
+h = _total / 3600
+_total = _total - h * 3600
+m = _total / 60
+_total = _total - m * 60
+s = _total
 
-print '%s hrs' % (1.0 * _total / 3600)
+print '%sH:%sM:%sS' % (h, m, s)
+print '%s hrs' % (TotalHours)
+if Rate is not None:
+    print '%s Payment Units' % (TotalHours * Rate)
