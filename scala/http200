@@ -1,0 +1,5 @@
+#!/bin/sh
+
+HERE="`dirname $0`"
+NAME="`basename $0`"
+scala -feature -nc -save "$HERE"/"$NAME".scala "$@"
