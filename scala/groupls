@@ -1,0 +1,4 @@
+#!/bin/sh
+
+HERE="`dirname $0`"
+scala -feature -nc -save "$HERE"/groupls.scala "$@"
