@@ -23,4 +23,5 @@ send "watch -d -n 1 'df -h'" C-m
 select-pane -t 0
 
 # pane 0 - glances
-send "glances" C-m
+# send "glances" C-m
+send "htop" C-m
