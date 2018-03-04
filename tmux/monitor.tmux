@@ -18,7 +18,7 @@ select-pane -t 0
 
 # pane 3 - df
 split-window -h
-send "watch -d -n 1 'df -h'" C-m
+send "watch -d -n 3 'df -lh -x tmpfs -x devtmpfs --output=source,fstype,size,avail,pcent,target; echo; zpool list -o name,size,free,cap,health'" C-m
 
 select-pane -t 0
 
